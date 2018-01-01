@@ -1,8 +1,8 @@
 var ball = document.getElementById('ball').style;
 let vSpeed = 0.01;
-let vTime = 5;
-let hSpeed = 1.83;
-let topBall = 5;
+let vTime = 6;
+let hSpeed = 2.85;
+let topBall = 30;
 let leftBall = 30;
 let topBallFactor = 1.3;
 
@@ -16,8 +16,8 @@ function ballDown(y = topBall, x = leftBall) {
             x += hSpeed;
             ballDown(y, x);
         } else {
-            if(topBall > 40 && topBall < 65) topBallFactor += 1;
-            else if(topBall > 65) topBallFactor += 3    ;
+            if(topBall > 40 && topBall < 65) topBallFactor += 3;
+            else if(topBall > 65) topBallFactor += 1;
             topBall += topBall / topBallFactor;
             ballUp(y, x);
         }
