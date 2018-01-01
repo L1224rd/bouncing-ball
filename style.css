@@ -1,0 +1,24 @@
+body {
+    margin: 0px;
+    padding: 0px;
+}
+
+#ground {
+    height: 10%;
+    width: 100%;
+    display: block;
+    position: absolute;
+    top: 90%;
+    background-color: rgb(92, 85, 85);
+}
+
+#ball {
+    height: 50px;
+    width: 50px;    
+    display: block;
+    position: absolute;
+    top: 50%; /* 82.1%; */ 
+    left: 100px;
+    background-color: rgb(221, 21, 21);
+    border-radius: 50%;
+}
