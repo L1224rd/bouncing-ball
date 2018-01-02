@@ -5,9 +5,15 @@ let vSpeed = 6;
 let hAcceleration = -0.00121;
 let ground = 83.2;
 let ballTimer = new Date();
+let volume = 1;
+
+function global(y){
+    // console.log(y);
+}
 
 
 function fall(x = 30, y = 0) {
+    global(y);
     ball.transform = 'rotate('+x+'deg)';
     if (hSpeed > 0) hSpeed += hAcceleration;
     else if (y < ground) {
@@ -22,7 +28,7 @@ function fall(x = 30, y = 0) {
         if (y < ground) {
             fall(x + hSpeed, y + g);
         } else {
-            playSound(x);
+            playSound();
             jump(x + hSpeed);
         }
     }, vSpeed);
@@ -30,6 +36,7 @@ function fall(x = 30, y = 0) {
 
 
 function jump(x, y = ground) {
+    global(y);
     ball.transform = 'rotate('+x+'deg)';
     if (hSpeed > 0) hSpeed += hAcceleration;
     else if (y < ground) {
@@ -45,12 +52,14 @@ function jump(x, y = ground) {
             jump(x + hSpeed, y - g);
         } else {
             fall(x + hSpeed, y);
+            volume = (100-y)/100;
         }
     }, vSpeed);
 }
 
-function playSound(volume){
+function playSound(){
     let sound = document.getElementById('audio-ball');
+    sound.volume = volume;
     sound.currentTime = 0;
     sound.play();
 }
