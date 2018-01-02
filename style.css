@@ -1,14 +1,15 @@
 body {
     margin: 0px;
     padding: 0px;
+    background-color: skyblue;
 }
 
 #ground {
-    height: 10%;
+    height: 20%;
     width: 100%;
     display: block;
     position: absolute;
-    top: 90%;
+    top: 80%;
     background-color: rgb(92, 85, 85);
 }
 
