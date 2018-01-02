@@ -13,12 +13,16 @@ body {
 }
 
 #ball {
-    height: 50px;
-    width: 50px;    
+    height: 70px;
+    width: 70px;    
     display: block;
     position: absolute;
     top: 10%; /* 82.1%; */ 
     left: 30px;
-    background-color: rgb(221, 21, 21);
     border-radius: 50%;
+}
+
+#ball-img {
+    height: 100%;
+    width: 100%;
 }
