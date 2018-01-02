@@ -1,34 +1,30 @@
-var ball = document.getElementById('ball').style;
+let ball = document.getElementById('ball').style;
 let g = 0.5;
-let hSpeed = 1.84;
-let vSpeed = 6;
-let hAcceleration = -0.00121;
+let hSpeed = 0.11;
+let vSpeed = 5;
+let hAcceleration = -0.000065;
 let ground = 83.2;
 let ballTimer = new Date();
 let volume = 1;
+let loops = 0;
 
-function global(y){
-    // console.log(y);
-}
-
-
-function fall(x = 30, y = 0) {
-    global(y);
-    ball.transform = 'rotate('+x+'deg)';
-    if (hSpeed > 0) hSpeed += hAcceleration;
-    else if (y < ground) {
+function fall(x = 1, y = 0) {
+    ball.transform = 'rotate('+x*12+'deg)';
+    if (hSpeed > 0.007) hSpeed += hAcceleration;
+    else {
         hSpeed = 0;
         y = ground;
         return;
     }
-    ball.left = x + 'px';
+    ball.left = x + '%';
     g += 0.01;
+    loops++;
     setTimeout(() => {
         ball.top = y + '%';
         if (y < ground) {
             fall(x + hSpeed, y + g);
         } else {
-            playSound();
+            playSound(x);
             jump(x + hSpeed);
         }
     }, vSpeed);
@@ -36,16 +32,16 @@ function fall(x = 30, y = 0) {
 
 
 function jump(x, y = ground) {
-    global(y);
-    ball.transform = 'rotate('+x+'deg)';
-    if (hSpeed > 0) hSpeed += hAcceleration;
-    else if (y < ground) {
+    ball.transform = 'rotate('+x*12+'deg)';
+    if (hSpeed > 0.007) hSpeed += hAcceleration;
+    else {
         hSpeed = 0;
         y = ground;
         return;
     }
-    ball.left = x + 'px';
+    ball.left = x + '%';
     g -= 0.014;
+    loops++;
     setTimeout(() => {
         ball.top = y + '%';
         if (g >= 0) {
@@ -59,7 +55,7 @@ function jump(x, y = ground) {
 
 function playSound(){
     let sound = document.getElementById('audio-ball');
-    sound.volume = volume;
+    sound.volume = volume-loops/25000;
     sound.currentTime = 0;
     sound.play();
 }
