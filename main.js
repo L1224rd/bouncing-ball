@@ -1,44 +1,38 @@
 var ball = document.getElementById('ball').style;
-let vSpeed = 0.01;
-let vTime = 6;
-let hSpeed = 2.85;
-let topBall = 30;
-let leftBall = 30;
-let topBallFactor = 1.3;
+let g = 0.5;
+let hSpeed = 1.7;
+let vSpeed = 7;
+let hAcceleration = -0.0013;
 
-function ballDown(y = topBall, x = leftBall) {
-    vSpeed += 0.03;
+
+function fall(x = 30, y = 10) {
+    if(hSpeed > 0) hSpeed += hAcceleration;
+    else hSpeed = 0;
     ball.left = x + 'px';
-    ball.top = y + '%';
+    g += 0.01;
     setTimeout(() => {
-        if (y < 82.1) {
-            y += vSpeed;
-            x += hSpeed;
-            ballDown(y, x);
+        ball.top = y + '%';
+        if (y < 81) {
+            fall(x + hSpeed, y + g);
         } else {
-            if(topBall > 40 && topBall < 65) topBallFactor += 3;
-            else if(topBall > 65) topBallFactor += 1;
-            topBall += topBall / topBallFactor;
-            ballUp(y, x);
+            jump(x + hSpeed);
         }
-    }, vTime);
+    }, vSpeed);
 }
 
-function ballUp(y = 82.1, x = leftBall) {
-    vSpeed -= 0.03;
+function jump(x, y = 82) {
+    if(hSpeed > 0) hSpeed += hAcceleration;
     ball.left = x + 'px';
-    ball.top = y + '%';
+    g -= 0.014;
+    let last = y;
     setTimeout(() => {
-        if (y > topBall/2+5) {
-            y -= vSpeed;
-            x += hSpeed;
-            ballUp(y, x);
+        ball.top = y + '%';
+        if (g >= 0) {
+            jump(x + hSpeed, y - g);
         } else {
-            ballDown(y, x);
+            fall(x + hSpeed, y);
         }
-    }, vTime);
+    }, vSpeed);
 }
 
-ballDown();
-
-
+fall();
