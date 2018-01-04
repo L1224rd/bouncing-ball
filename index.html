@@ -6,7 +6,7 @@
     <title>Bouncing Ball</title>
     <link rel="stylesheet" href="style.css">
 </head>
-<body onmousemove="getMouseCoords(event)" onmouseup="mouseoff()">
+<body onmousemove="getMouseCoords(event)" onmouseup="mouseoff()" onresize="setBallSize()">
     <div id="ground"></div>
     <div id="ball"><img src="./assets/images/ball.png" alt="ball" id="ball-img" onmousedown="grabBall()" draggable="false"></div>
     <audio id="audio-ball" src="./assets/sounds/ball.mp3" autostart="false"></audio>

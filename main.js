@@ -1,6 +1,4 @@
 let ball = document.getElementById('ball').style;
-ball.width = '5%';
-ball.height = (5 * document.body.clientWidth) / 100;
 let g = 0.5;
 let hSpeed = 0.21;
 let vSpeed = 5;
@@ -13,25 +11,29 @@ let mouseon = 0;
 let rightWall = 95.3;
 let leftWall = -0.5;
 let lowLimit = 0.001;
+let frictionFlag = 0;
 
 function getMouseCoords(event) {
     mousePos = { x: event.clientX, y: event.clientY };
 }
 
+function setBallSize() {
+    ball.width = '5%';
+    ball.height = (5 * document.body.clientWidth) / 100;
+}
+
 function grabBall() {
     mouseon = 1;
     setTimeout(() => {
-        ball.top = mousePos.y - 35;
-        ball.left = mousePos.x - 35;
+        ball.top = ((mousePos.y * 100) / document.body.clientHeight - 2.5) + '%';
+        ball.left = ((mousePos.x * 100) / document.body.clientWidth - 2.5) + '%';
         if (mouseon === 1) grabBall();
     }, 5);
 }
 
 function mouseoff() {
     mouseon = 0;
-    let height = (takeoffPx(ball.top) * 100 / document.body.clientHeight);
-    let width = (takeoffPx(ball.left) * 100 / document.body.clientWidth);
-    fall(width, height);
+    fall(+ball.left.slice(0, ball.left.length - 1), +ball.top.slice(0, ball.top.length - 1));
 }
 
 function takeoffPx(a) {
@@ -78,16 +80,12 @@ function fall(x = 0, y = 0) {
 
 function jump(x, y = ground) {
     ball.transform = 'rotate(' + x * 12 + 'deg)';
-    if (x > rightWall) {
+    if (x > rightWall || x < leftWall) {
         playSound(1);
         hSpeed = -hSpeed;
         hAcceleration = -hAcceleration;
     }
-    if (x < leftWall) {
-        playSound(1);
-        hSpeed = -hSpeed;
-        hAcceleration = -hAcceleration;
-    }
+
     if (hSpeed < lowLimit && hSpeed > -lowLimit) {
         hSpeed = 0;
         y = ground;
@@ -111,12 +109,17 @@ function jump(x, y = ground) {
 }
 
 function playSound(wall) {
-    if (volume > 0.1689 || wall === 1) {
+    if (volume > 0.1689 || wall) {
         let sound = document.getElementById('audio-ball');
         sound.volume = volume - loops / 25000;
         sound.currentTime = 0;
         sound.play();
+    } else {
+        if(frictionFlag === 0) hAcceleration *= 1.5;
+        frictionFlag = 1;
     }
 }
+
+setBallSize();
 
 // fall();
