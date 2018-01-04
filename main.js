@@ -23,6 +23,8 @@ function setBallSize() {
 }
 
 function grabBall() {
+    loops = 0;
+    hSpeed = 0;
     mouseon = 1;
     setTimeout(() => {
         ball.top = ((mousePos.y * 100) / document.body.clientHeight - 2.5) + '%';
@@ -33,34 +35,25 @@ function grabBall() {
 
 function mouseoff() {
     mouseon = 0;
-    fall(+ball.left.slice(0, ball.left.length - 1), +ball.top.slice(0, ball.top.length - 1));
-}
-
-function takeoffPx(a) {
-    let b = a.split('');
-    b.pop();
-    b.pop();
-    return b.join('');
+    if(hSpeed === 0){
+        hSpeed = 0.21;
+        fall(+ball.left.slice(0, ball.left.length - 1), +ball.top.slice(0, ball.top.length - 1));
+    } 
 }
 
 function fall(x = 0, y = 0) {
     ball.transform = 'rotate(' + x * 12 + 'deg)';
-    if (x > rightWall) {
+    if (x > rightWall || x < leftWall) {
         playSound(1);
         hSpeed = -hSpeed;
         hAcceleration = -hAcceleration;
     }
-    if (x < leftWall) {
-        playSound(1);
-        hSpeed = -hSpeed;
-        hAcceleration = -hAcceleration;
-    }
+
     if (hSpeed < lowLimit && hSpeed > -lowLimit) {
         hSpeed = 0;
         y = ground;
         return;
-    }
-    else {
+    } else {
         hSpeed += hAcceleration;
     }
     ball.left = x + '%';
@@ -90,8 +83,7 @@ function jump(x, y = ground) {
         hSpeed = 0;
         y = ground;
         return;
-    }
-    else {
+    } else {
         hSpeed += hAcceleration;
     }
     ball.left = x + '%';
@@ -109,17 +101,17 @@ function jump(x, y = ground) {
 }
 
 function playSound(wall) {
-    if (volume > 0.1689 || wall) {
+    if (volume > 0.169 || wall) {
         let sound = document.getElementById('audio-ball');
         sound.volume = volume - loops / 25000;
         sound.currentTime = 0;
         sound.play();
     } else {
-        if(frictionFlag === 0) hAcceleration *= 1.5;
+        if (frictionFlag === 0) hAcceleration *= 1.5;
         frictionFlag = 1;
     }
 }
 
 setBallSize();
 
-// fall();
+fall();
