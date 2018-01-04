@@ -14,15 +14,31 @@ let lowLimit = 0.001;
 let frictionFlag = 0;
 let lastMouseXArray = [];
 
-function getMouseDirection(){
-    if(lastMouseXArray[0] - lastMouseXArray[1] <= 0) return 1; //right
+function getMouseSpeed(date) {
+    let l = lastMouseXArray;
+    let res = [];
+    l.forEach((each) => {
+        if(date - each.date < 300) res.push(each.x);
+    });
+    let result = res[res.length - 1] - res[0];
+    return result > 0 ? result : -result;
+}
+
+function getMouseDirection() {
+    let l = lastMouseXArray;
+    if (l[l.length - 2].x - l[l.length - 1].x <= 0) return 1; //right
     return 0; //left
 }
 
-function getMouseCoords(event) {
-    mousePos = { x: event.clientX, y: event.clientY };
-    if(lastMouseXArray.length >= 2) lastMouseXArray.shift();
-    lastMouseXArray.push(mousePos.x);
+function setMouseCoords(e) {
+    let l = lastMouseXArray;
+    mousePos = { x: e.clientX, y: e.clientY };
+    if(l.length >= 100) l.shift();
+    let d = new Date();
+    l.push({
+        x: e.clientX,
+        date: d
+    });
 }
 
 function setBallSize() {
@@ -32,10 +48,9 @@ function setBallSize() {
 
 function grabBall() {
     g = 0.5;
-    hAcceleration = -0.0001;
-    loops = 0;
-    hSpeed = 0;
     mouseon = 1;
+    hAcceleration = -0.0001;
+    loops = hSpeed = volume = 0;
     setTimeout(() => {
         ball.top = ((mousePos.y * 100) / document.body.clientHeight - 2.5) + '%';
         ball.left = ((mousePos.x * 100) / document.body.clientWidth - 2.5) + '%';
@@ -45,10 +60,10 @@ function grabBall() {
 }
 
 function mouseoff() {
-    mouseon = 0;
-    if (hSpeed === 0) {
-        hSpeed = 0.21;
-        if(getMouseDirection() == 0) {
+    if (hSpeed === 0 && mouseon === 1) {
+        mouseon = 0;
+        hSpeed = getMouseSpeed(new Date())/1000;
+        if (getMouseDirection() == 0) {
             hSpeed *= -1;
             hAcceleration *= -1;
         }
@@ -66,8 +81,10 @@ function fall(x = 0, y = 0) {
 
     if (hSpeed < lowLimit && hSpeed > -lowLimit) {
         hSpeed = 0;
-        y = ground;
-        return;
+        if (volume < 0.169) {
+            y = ground;
+            return;
+        }
     } else {
         hSpeed += hAcceleration;
     }
@@ -96,8 +113,10 @@ function jump(x, y = ground) {
 
     if (hSpeed < lowLimit && hSpeed > -lowLimit) {
         hSpeed = 0;
-        y = ground;
-        return;
+        if (volume < 0.169) {
+            y = ground;
+            return;
+        }
     } else {
         hSpeed += hAcceleration;
     }
