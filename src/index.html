@@ -1,4 +1,5 @@
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -6,10 +7,14 @@
     <title>Bouncing Ball</title>
     <link rel="stylesheet" href="style.css">
 </head>
-<body onmousemove="setMouseCoords(event)" onmouseup="mouseoff()" onresize="setBallSize()">
+
+<body>
     <div id="ground"></div>
-    <div id="ball"><img src="./assets/images/ball.png" alt="ball" onmousedown="grabBall()" draggable="false"></div>
+    <div id="ball">
+        <img src="./assets/images/ball.png" alt="ball" draggable="false">
+    </div>
     <audio id="audio-ball" src="./assets/sounds/ball.mp3" autostart="false"></audio>
-    <script src="main.js"></script>
+    <script src="./bundle.js"></script>
 </body>
+
 </html>

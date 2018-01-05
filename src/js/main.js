@@ -14,11 +14,20 @@ let lowLimit = 0.001;
 let frictionFlag = 0;
 let lastMouseXArray = [];
 
+function init(scene = false){
+    window.addEventListener('resize', setBallSize);
+    window.addEventListener('mouseup', mouseoff);
+    window.addEventListener('mousemove', setMouseCoords);
+    document.getElementById('ball').addEventListener('mousedown', grabBall);
+    if(scene) backScene();
+    setBallSize();
+}
+
 function getMouseSpeed(date) {
     let l = lastMouseXArray;
     let res = [];
     l.forEach((each) => {
-        if(date - each.date < 300) res.push(each.x);
+        if (date - each.date < 200) res.push(each.x);
     });
     let result = res[res.length - 1] - res[0];
     return result > 0 ? result : -result;
@@ -33,12 +42,18 @@ function getMouseDirection() {
 function setMouseCoords(e) {
     let l = lastMouseXArray;
     mousePos = { x: e.clientX, y: e.clientY };
-    if(l.length >= 100) l.shift();
+    if (l.length >= 100) l.shift();
     let d = new Date();
     l.push({
         x: e.clientX,
         date: d
     });
+}
+
+function backScene(){
+    document.body.style.backgroundImage = "url('https://images.freeimages.com/images/large-previews/132/yellow-road-1354805.jpg')";
+    document.body.style.backgroundPositionY = "-290px";
+    document.getElementById('ground').style.visibility = "hidden";
 }
 
 function setBallSize() {
@@ -52,8 +67,8 @@ function grabBall() {
     hAcceleration = -0.0001;
     loops = hSpeed = volume = 0;
     setTimeout(() => {
-        ball.top = ((mousePos.y * 100) / document.body.clientHeight - 2.5) + '%';
-        ball.left = ((mousePos.x * 100) / document.body.clientWidth - 2.5) + '%';
+        if (mousePos.y > document.body.clientHeight * 0.03 && mousePos.x > document.body.clientWidth * 0.03) ball.top = ((mousePos.y * 100) / document.body.clientHeight - 2.5) + '%';
+        if (mousePos.y > document.body.clientHeight * 0.03 && mousePos.x > document.body.clientWidth * 0.03) ball.left = ((mousePos.x * 100) / document.body.clientWidth - 2.5) + '%';
         volume = (((mousePos.y * 100) / document.body.clientHeight - 2.5) / 100) >= 0 ? 1 - (((mousePos.y * 100) / document.body.clientHeight - 2.5) / 100) : 1;
         if (mouseon === 1) grabBall();
     }, 5);
@@ -62,7 +77,7 @@ function grabBall() {
 function mouseoff() {
     if (hSpeed === 0 && mouseon === 1) {
         mouseon = 0;
-        hSpeed = getMouseSpeed(new Date())/1000;
+        hSpeed = getMouseSpeed(new Date()) / 1000;
         if (getMouseDirection() == 0) {
             hSpeed *= -1;
             hAcceleration *= -1;
@@ -73,10 +88,11 @@ function mouseoff() {
 
 function fall(x = 0, y = 0) {
     ball.transform = 'rotate(' + x * 12 + 'deg)';
-    if (x > rightWall || x < leftWall) {
+    if (x >= rightWall || x <= leftWall) {
+        x += x >= rightWall ? -1 : 1;
         playSound(1);
-        hSpeed = -hSpeed;
-        hAcceleration = -hAcceleration;
+        hSpeed *= -0.9;
+        hAcceleration *= -1;
     }
 
     if (hSpeed < lowLimit && hSpeed > -lowLimit) {
@@ -105,10 +121,12 @@ function fall(x = 0, y = 0) {
 
 function jump(x, y = ground) {
     ball.transform = 'rotate(' + x * 12 + 'deg)';
-    if (x > rightWall || x < leftWall) {
+    if (x >= rightWall || x <= leftWall) {
+        x += x >= rightWall ? -1 : 1;
         playSound(1);
-        hSpeed = -hSpeed;
-        hAcceleration = -hAcceleration;
+        hSpeed *= -0.9;
+        hAcceleration *= -1;
+
     }
 
     if (hSpeed < lowLimit && hSpeed > -lowLimit) {
@@ -141,10 +159,12 @@ function playSound(wall) {
         sound.currentTime = 0;
         sound.play();
     } else {
-        if (frictionFlag === 0) hAcceleration *= 2;
+        if (frictionFlag === 0) hAcceleration *= 2.5;
         frictionFlag = 1;
     }
 }
 
-setBallSize();
+// backScene();
 // fall();
+init();
+

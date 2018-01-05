@@ -1,0 +1,30 @@
+{
+  "name": "bouncing-ball",
+  "version": "1.0.0",
+  "description": "Realistic Bouncing Ball",
+  "main": "webpack.config.js",
+  "scripts": {
+    "webpack": "./node_modules/.bin/webpack.cmd",
+    "dev": "webpack-dev-server --content-base src --inline --hot",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/L1224rd/bouncing-ball.git"
+  },
+  "keywords": [
+    "VanillaJS",
+    "bouncing",
+    "ball"
+  ],
+  "author": "Eder Marques",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/L1224rd/bouncing-ball/issues"
+  },
+  "homepage": "https://github.com/L1224rd/bouncing-ball#readme",
+  "dependencies": {
+    "webpack": "^3.10.0",
+    "webpack-dev-server": "^2.9.7"
+  }
+}
