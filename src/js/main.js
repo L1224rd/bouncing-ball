@@ -1,3 +1,5 @@
+require('!style-loader!css-loader!../style.css');
+
 let ball = document.getElementById('ball').style;
 let g = 0.5;
 let hSpeed = 0.21;
