@@ -13,6 +13,6 @@ module.exports = {
     leftWall:  -1,
     lowLimit:  0.001,
     frictionFlag:  0,
-    lastMouseXArray: []
+    lastMouseArray: []
 }
 

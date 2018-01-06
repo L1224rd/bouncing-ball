@@ -42,18 +42,23 @@ moviment.dropBall = function () {
         global.mouseon = 0; // indicates that the user released the mouse
 
         // gets the mouse speed and apply it to the ball horizontal speed
-        global.hSpeed = mouse.getMouseSpeed(new Date()) / 1000;
+        global.hSpeed = mouse.getMouseSpeed(new Date()).x / 1000;
+        global.g = mouse.getMouseSpeed(new Date()).y / 500;
 
         /* if mouse is going left change horizontal 
         speed and accelaration to negative */
-        if (mouse.getMouseDirection() == 0) {
+        if (mouse.getMouseDirection().x == 0) {
             global.hSpeed *= -1;
             global.hAcceleration *= -1;
         }
 
         // call fall function passing the current ball position in '%'
         // using the slice method to just the position number (13% => 13) 
-        moviment.fall(+ball.left.slice(0, ball.left.length - 1), +ball.top.slice(0, ball.top.length - 1));
+        if (mouse.getMouseDirection().y == 1) {
+            moviment.jump(+ball.left.slice(0, ball.left.length - 1), +ball.top.slice(0, ball.top.length - 1));
+        } else {
+            moviment.fall(+ball.left.slice(0, ball.left.length - 1), +ball.top.slice(0, ball.top.length - 1));
+        }
     }
 }
 
@@ -107,8 +112,13 @@ moviment.jump = function (x, y = global.ground) {
         y = global.ground; // stop the ball vertically
         return; // break functions fall and jump
     }
+    if(y <= 0) {
+        sound.playSound(1);
+        moviment.fall(x, y);
+        return;
+    }
     setTimeout(() => { // needs timeout so the recursive functions don't crash the app
-        global.g -= global.gravity*1.4; // "gravity" (speed will be decreasing until it gets to zero)
+        global.g -= global.gravity * 1.4; // "gravity" (speed will be decreasing until it gets to zero)
         ball.top = y + '%'; // position the ball
         if (global.g >= 0) { // if the ball has vertical speed
             moviment.jump(x + global.hSpeed, y - global.g); // continue going up and horizontally
