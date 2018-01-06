@@ -6,9 +6,10 @@ module.exports = {
     ground:  83.2,
     volume:  1,
     loops:  0,
-    mousePos:  { x: 0, y: 0 , mouseon:  0},
-    rightWall:  95.3,
-    leftWall:  -0.5,
+    mousePos:  { x: 0, y: 0},
+    mouseon:  0,
+    rightWall:  96,
+    leftWall:  -1,
     lowLimit:  0.001,
     frictionFlag:  0,
     lastMouseXArray: []

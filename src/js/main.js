@@ -3,12 +3,12 @@ let envConfig = require('./env_config.js'); // enviroment config (heart of the a
 let config = Object.assign({}, envConfig);
 let ball = document.getElementById('ball').style;
 
-function init(scene = false){ // adds eventlisteners to DOM elements
+function init(scene = false) { // adds eventlisteners to DOM elements
     window.addEventListener('resize', setBallSize); // sets the ball size dynamicly
     window.addEventListener('mouseup', mouseoff); // drop the ball
     window.addEventListener('mousemove', setMouseCoords); // drag the ball and follow the mouse position
     document.getElementById('ball').addEventListener('mousedown', grabBall); // grab ball
-    if(scene) backScene(); // puts an background image on the page
+    if (scene) backScene(); // puts an background image on the page
     setBallSize(); // resize ball on init
 }
 
@@ -58,7 +58,7 @@ function setMouseCoords(e) {
     });
 }
 
-function backScene(){ // adds an image as background
+function backScene() { // adds an image as background
     document.body.style.backgroundImage = "url('https://images.freeimages.com/images/large-previews/132/yellow-road-1354805.jpg')";
     document.body.style.backgroundPositionY = "-290px";
     document.getElementById('ground').style.visibility = "hidden";
@@ -82,19 +82,17 @@ function grabBall() {
     setTimeout(() => {
         // recursive function that makes the ball follow the mouse as if the user was holding it
 
-        if (config.mousePos.y > bodyHeight * 0.03 && config.mousePos.x > bodyWidth * 0.03)
-        ball.top = ((config.mousePos.y * 100) / bodyHeight - 2.5) + '%';
+            ball.top = ((config.mousePos.y * 100) / bodyHeight - 2.5) + '%';
 
         /* 0.03 is a limit so the ball only follow the mouse on the delimitted rectangle
         to avoid bugs, 2.5 is the ball radius, so the mouse "grabs" the mouse on its center */
 
-        if (config.mousePos.y > bodyHeight * 0.03 && config.mousePos.x > bodyWidth * 0.03)
-        ball.left = ((config.mousePos.x * 100) / bodyWidth - 2.5) + '%';
+            ball.left = ((config.mousePos.x * 100) / bodyWidth - 2.5) + '%';
 
         // sets the volume of the ball sound based on the "drop" y position
 
-        config.volume = (((config.mousePos.y * 100) / bodyHeight - 2.5) / 100) >= 0 
-        ? 1 - (((config.mousePos.y * 100) / bodyHeight - 2.5) / 100) : 1;
+        config.volume = (((config.mousePos.y * 100) / bodyHeight - 2.5) / 100) >= 0
+            ? 1 - (((config.mousePos.y * 100) / bodyHeight - 2.5) / 100) : 1;
 
         /* mouseon starts as 0, becomes 1 when the ball is clicked and
         stays 1 until mouseup is fired on the window */
@@ -102,7 +100,7 @@ function grabBall() {
         if (config.mouseon === 1) grabBall();
 
     }, 5); // the recursive function needs to have a timeout of at least 1
-           // so the app doesn't crash... 
+    // so the app doesn't crash... 
 }
 
 function mouseoff() {
@@ -111,7 +109,7 @@ function mouseoff() {
 
         // gets the mouse speed and apply it to the ball horizontal speed
         config.hSpeed = getMouseSpeed(new Date()) / 1000;
-        
+
         /* if mouse is going left change horizontal 
         speed and accelaration to negative */
         if (getMouseDirection() == 0) {
@@ -119,92 +117,89 @@ function mouseoff() {
             config.hAcceleration *= -1;
         }
 
-        // call fall function passing the actual ball position in '%'
+        // call fall function passing the current ball position in '%'
         // using the slice method to just the position number (13% => 13) 
         fall(+ball.left.slice(0, ball.left.length - 1), +ball.top.slice(0, ball.top.length - 1));
     }
 }
 
-function fall(x = 0, y = 0) { // if no argument is passed, the ball starts
-                              //  at the top left of the window
-    ball.transform = 'rotate(' + x * 12 + 'deg)';
-    if (x >= config.rightWall || x <= config.leftWall) {
-        x += x >= config.rightWall ? -1 : 1;
+function kinematic(x, y) {
+    ball.transform = 'rotate(' + x * 12 + 'deg)'; // rotates the ball on its own axis
+    if (x >= config.rightWall || x <= config.leftWall) { // when ball hits the wall
+        x = x >= config.rightWall ? config.rightWall - 0.1 : config.leftWall + 0.1; // set x to 0.1% away from the wall to avoid bugs
         playSound(1);
-        config.hSpeed *= -0.9;
-        config.hAcceleration *= -1;
+        config.hSpeed *= -0.9;      // change ball direction
+        config.hAcceleration *= -1; // and reduces it's speed a bit
     }
 
-    if (config.hSpeed < config.lowLimit && config.hSpeed > -config.lowLimit) {
-        config.hSpeed = 0;
-        if (config.volume < 0.169) {
-            y = config.ground;
-            return;
-        }
-    } else {
+    if (config.hSpeed < config.lowLimit && config.hSpeed > -config.lowLimit) { // if ball gets very slow
+        config.hSpeed = 0; // stop ball horizontally
+        if (config.volume < 0.169) return false;
+        // if ball is too low returns 1 so fall/jump will stop the ball vertically
+    } else { // if the ball is not too slow reduce it's speed
         config.hSpeed += config.hAcceleration;
     }
-    ball.left = x + '%';
-    config.g += 0.01;
-    config.loops++;
-    setTimeout(() => {
-        ball.top = y + '%';
-        if (y < config.ground) {
-            fall(x + config.hSpeed, y + config.g);
-        } else {
+    ball.left = x + '%'; // move the ball to x
+    config.loops++; // "loops" increases on fall and jump, it's used to set sound volume
+    return x;
+}
+
+function fall(x = 0, y = 0) {
+    /* if no argument is passed, the ball starts
+    at the top left of the window */
+    x = kinematic(x, y); // sets fall's x to kinematic's x
+    if (x === false) { // if kinematic returns false 
+        y = config.ground; // stop the ball vertically
+        return; // break functions fall and jump
+    }
+    setTimeout(() => { // needs timeout so the recursive functions don't crash the app
+        config.g += 0.01; // "gravity" (speed will be increasing until it reaches the ground)
+        ball.top = y + '%'; // position the ball
+        if (y < config.ground) { // if the ball hasn't hit the ground
+            fall(x + config.hSpeed, y + config.g); // continue falling and going horizontally
+        } else { // when ball hits the ground
             playSound();
-            jump(x + config.hSpeed);
+            jump(x + config.hSpeed); // call jump passing ball's current x position
         }
-    }, config.vSpeed);
+    }, config.vSpeed); // speed of the program (the more the slower)
 }
 
 
 function jump(x, y = config.ground) {
-    ball.transform = 'rotate(' + x * 12 + 'deg)';
-    if (x >= config.rightWall || x <= config.leftWall) {
-        x += x >= config.rightWall ? -1 : 1;
-        playSound(1);
-        config.hSpeed *= -0.9;
-        config.hAcceleration *= -1;
-
+    /* if there is no y argument the function was called from fall
+    wich means the ball is on the ground*/
+    x = kinematic(x, y); // sets fall's x to kinematic's x
+    if (x === false) { // if kinematic returns false 
+        y = config.ground; // stop the ball vertically
+        return; // break functions fall and jump
     }
-
-    if (config.hSpeed < config.lowLimit && config.hSpeed > -config.lowLimit) {
-        config.hSpeed = 0;
-        if (config.volume < 0.169) {
-            y = config.ground;
-            return;
+    setTimeout(() => { // needs timeout so the recursive functions don't crash the app
+        config.g -= 0.014; // "gravity" (speed will be decreasing until it gets to zero)
+        ball.top = y + '%'; // position the ball
+        if (config.g >= 0) { // if the ball has vertical speed
+            jump(x + config.hSpeed, y - config.g); // continue going up and horizontally
+        } else { // if speed reachs 0
+            fall(x + config.hSpeed, y); // start falling from ball's current x and y position
+            config.volume = (100 - y) / 100; // sets sound volume relative to the fall height
         }
-    } else {
-        config.hSpeed += config.hAcceleration;
-    }
-    ball.left = x + '%';
-    config.g -= 0.014;
-    config.loops++;
-    setTimeout(() => {
-        ball.top = y + '%';
-        if (config.g >= 0) {
-            jump(x + config.hSpeed, y - config.g);
-        } else {
-            fall(x + config.hSpeed, y);
-            config.volume = (100 - y) / 100;
-        }
-    }, config.vSpeed);
+    }, config.vSpeed); // speed of the program (the more the slower)
 }
 
 function playSound(wall) {
-    if (config.volume > 0.169 || wall) {
-        let sound = document.getElementById('audio-ball');
+    if (config.volume > 0.169 || wall) { // if sound's volume is too small don't play it at all
+        let sound = document.getElementById('audio-ball'); // gets html audio tag
+
+        /* sets the volume based on the height of the fall 
+        and how many loops the program did */
         sound.volume = config.volume - config.loops / 25000;
-        sound.currentTime = 0;
-        sound.play();
-    } else {
+        sound.currentTime = 0; // stop current sound before playing another one
+        sound.play(); // play the sound when the ball hits the ground or wall
+    } else { // if the ball is rolling on the ground (not jumping any more)
         if (config.frictionFlag === 0) config.hAcceleration *= 2.5;
-        config.frictionFlag = 1;
+        // increase friction because ball is in contant contact with the ground
+        config.frictionFlag = 1; // do this just one time
     }
 }
 
-// backScene();
-// fall();
 init();
 
