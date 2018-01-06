@@ -1,7 +1,7 @@
-let exported = module.exports = {};
+let mouse = module.exports = {};
 let global = require('./global_variables.js');
 
-exported.getMouseSpeed = function(date) {
+mouse.getMouseSpeed = function(date) {
 
     /* gets lastMouseXArray, wich has the last mouse positions and dates,
     loops through it and pushs into res the elements added to the array
@@ -21,7 +21,7 @@ exported.getMouseSpeed = function(date) {
     return result > 0 ? result : -result;
 }
 
-exported.getMouseDirection = function() {
+mouse.getMouseDirection = function() {
 
     /* gets the last 2 mouse positions on lastMouseXArray, if element 1 
     is less than 2, the mouse is going right, else left... */
@@ -31,14 +31,14 @@ exported.getMouseDirection = function() {
     return 0; //left
 }
 
-exported.setMouseCoords = function(e) {
+mouse.setMouseCoords = function(e) {
 
     /* fires every time the mouse moves on the window, sets mousePos with 
     the mouse coords and populates lastMouseXArray with mouse position and date,
     leaving the array with 100 max length*/
 
     let l = global.lastMouseXArray;
-    exported.mousePos = { x: e.clientX, y: e.clientY };
+    mouse.mousePos = { x: e.clientX, y: e.clientY };
     if (l.length >= 100) l.shift();
     let d = new Date();
     l.push({

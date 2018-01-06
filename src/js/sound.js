@@ -1,13 +1,16 @@
-let exported = module.exports = {};
+let sound = module.exports = {};
 let global = require('./global_variables');
 
-exported.playSound = function(wall) {
+sound.playSound = function(wall) {
     if (global.volume > 0.169 || wall) { // if sound's volume is too small don't play it at all
         let sound = document.getElementById('audio-ball'); // gets html audio tag
 
         /* sets the volume based on the height of the fall 
         and how many loops the program did */
-        sound.volume = global.volume - global.loops / 25000;
+        let sVolume = global.volume - global.loops / 25000;
+        if(sVolume <= 1 && sVolume >= 0) {
+            sound.volume = sVolume;
+        }
         sound.currentTime = 0; // stop current sound before playing another one
         sound.play(); // play the sound when the ball hits the ground or wall
     } else { // if the ball is rolling on the ground (not jumping any more)

@@ -1,10 +1,10 @@
-let exported = module.exports = {};
+let moviment = module.exports = {};
 let global = require('./global_variables.js'); // get global variables
 let sound = require('./sound.js'); // sound module
 let mouse = require('./mouse.js'); // mouse events module
 let ball = document.getElementById('ball').style; // get html ball div
 
-exported.grabBall = function () {
+moviment.grabBall = function () {
 
     global.hSpeed = global.volume = 0;
     global.reset('g', 'hAcceleration', 'loops');
@@ -31,13 +31,13 @@ exported.grabBall = function () {
         /* mouseon starts as 0, becomes 1 when the ball is clicked and
         stays 1 until mouseup is fired on the window */
 
-        if (global.mouseon === 1) exported.grabBall();
+        if (global.mouseon === 1) moviment.grabBall();
 
     }, 5); // the recursive function needs to have a timeout of at least 1
     // so the app doesn't crash... 
 }
 
-exported.dropBall = function () {
+moviment.dropBall = function () {
     if (global.mouseon === 1) { // if th mouse is was been pressed
         global.mouseon = 0; // indicates that the user released the mouse
 
@@ -53,11 +53,11 @@ exported.dropBall = function () {
 
         // call fall function passing the current ball position in '%'
         // using the slice method to just the position number (13% => 13) 
-        exported.fall(+ball.left.slice(0, ball.left.length - 1), +ball.top.slice(0, ball.top.length - 1));
+        moviment.fall(+ball.left.slice(0, ball.left.length - 1), +ball.top.slice(0, ball.top.length - 1));
     }
 }
 
-exported.kinematic = function (x, y) {
+moviment.kinematic = function (x, y) {
     ball.transform = 'rotate(' + x * 12 + 'deg)'; // rotates the ball on its own axis
     if (x >= global.rightWall || x <= global.leftWall) { // when ball hits the wall
         x = x >= global.rightWall ? global.rightWall - 0.1 : global.leftWall + 0.1; // set x to 0.1% away from the wall to avoid bugs
@@ -78,42 +78,42 @@ exported.kinematic = function (x, y) {
     return x;
 }
 
-exported.fall = function (x = 0, y = 0) {
+moviment.fall = function (x = 0, y = 0) {
     /* if no argument is passed, the ball starts
     at the top left of the window */
-    x = exported.kinematic(x, y); // sets fall's x to kinematic's x
+    x = moviment.kinematic(x, y); // sets fall's x to kinematic's x
     if (x === false) { // if kinematic returns false 
         y = global.ground; // stop the ball vertically
         return; // break functions fall and jump
     }
     setTimeout(() => { // needs timeout so the recursive functions don't crash the app
-        global.g += 0.01; // "gravity" (speed will be increasing until it reaches the ground)
+        global.g += global.gravity; // "gravity" (speed will be increasing until it reaches the ground)
         ball.top = y + '%'; // position the ball
         if (y < global.ground) { // if the ball hasn't hit the ground
-            exported.fall(x + global.hSpeed, y + global.g); // continue falling and going horizontally
+            moviment.fall(x + global.hSpeed, y + global.g); // continue falling and going horizontally
         } else { // when ball hits the ground
             sound.playSound();
-            exported.jump(x + global.hSpeed); // call jump passing ball's current x position
+            moviment.jump(x + global.hSpeed); // call jump passing ball's current x position
         }
     }, global.vSpeed); // speed of the program (the more the slower)
 }
 
 
-exported.jump = function (x, y = global.ground) {
+moviment.jump = function (x, y = global.ground) {
     /* if there is no y argument the function was called from fall
     wich means the ball is on the ground*/
-    x = exported.kinematic(x, y); // sets fall's x to kinematic's x
+    x = moviment.kinematic(x, y); // sets fall's x to kinematic's x
     if (x === false) { // if kinematic returns false 
         y = global.ground; // stop the ball vertically
         return; // break functions fall and jump
     }
     setTimeout(() => { // needs timeout so the recursive functions don't crash the app
-        global.g -= 0.014; // "gravity" (speed will be decreasing until it gets to zero)
+        global.g -= global.gravity*1.4; // "gravity" (speed will be decreasing until it gets to zero)
         ball.top = y + '%'; // position the ball
         if (global.g >= 0) { // if the ball has vertical speed
-            exported.jump(x + global.hSpeed, y - global.g); // continue going up and horizontally
+            moviment.jump(x + global.hSpeed, y - global.g); // continue going up and horizontally
         } else { // if speed reachs 0
-            exported.fall(x + global.hSpeed, y); // start falling from ball's current x and y position
+            moviment.fall(x + global.hSpeed, y); // start falling from ball's current x and y position
             global.volume = (100 - y) / 100; // sets sound volume relative to the fall height
         }
     }, global.vSpeed); // speed of the program (the more the slower)

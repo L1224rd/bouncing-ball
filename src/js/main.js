@@ -10,7 +10,7 @@ function init(scene = false) { // adds eventlisteners to DOM elements
     window.addEventListener('mousemove', mouse.setMouseCoords); // drag the ball and follow the mouse position
     document.getElementById('ball').addEventListener('mousedown', moviment.grabBall); // grab ball
     if (scene) scenario.backScene(); // puts an background image on the page
-    scenario.setBallSize(); // resize ball on init  
+    scenario.setBallSize(); // resize ball on init
 }
 
 init();

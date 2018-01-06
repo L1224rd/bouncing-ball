@@ -1,5 +1,6 @@
 module.exports = {
     g:  0.5,
+    gravity: 0.01,
     hSpeed:  0.21,
     vSpeed:  5,
     hAcceleration:  -0.0001,

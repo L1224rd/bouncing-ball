@@ -1,10 +1,10 @@
 let config = require('./env_config.js');
-let exported = module.exports = Object.assign({}, config);
+let global = module.exports = Object.assign({}, config);
 
-exported.reset = function(propertyName) {
-    for(arg in arguments){
+global.reset = function() { // sets the property to it's envConfig value
+    for(arg in arguments){ // loop through the arguments 
         let each = arguments[arg];
-        exported[each] = config[each];
+        global[each] = config[each];
     }
 }
 
